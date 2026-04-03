@@ -1,0 +1,39 @@
+name: Agile Test Demo
+# This workflow represents a set of basic End-to-End tests
+on:
+  workflow_dispatch:
+  
+env:
+  BASE_URL: ${{ vars.BASE_URL }}
+  BASE_AUTH_URL: ${{ vars.BASE_AUTH_URL }}
+  CLIENT_ID: ${{ secrets.CLIENT_ID }}
+  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+  PROJECT_KEY: ${{ vars.PROJECT_KEY }}
+
+jobs:
+  test:
+    name: run test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+
+      - name: Submit test result using API
+        run: |
+          export token=$( \
+            curl "$BASE_AUTH_URL/api/apikeys/authenticate" \
+            -X POST -H 'Content-Type:application/json' \
+            --data '{"clientId":"'"${CLIENT_ID}"'","clientSecret":"'"${CLIENT_SECRET}"'"}' | tr -d '"'\
+            )
+          curl -X POST "$BASE_URL/ds/test-executions/junit?projectKey=$PROJECT_KEY" \
+            -H "Content-Type:application/xml" \
+            -H "Authorization:JWT $token" \
+            --data-binary "@target/surefire-reports/TEST-calculateTest.xml"
