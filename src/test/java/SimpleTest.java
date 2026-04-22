@@ -19,26 +19,25 @@ public class SimpleTest {
     }
 
     @Test
-    @DisplayName("Kiểm tra phép trừ - Đã sửa để thành công")
-    void testSubtractionSuccess() {
-        System.out.println("Đang chạy: testSubtractionSuccess");
-        // Sửa từ 10 thành 15 để khớp với phép tính 20 - 5
-        assertEquals(15, 20 - 5, "20 - 5 phải bằng 15");
+    @DisplayName("Ví dụ một Test Case thất bại (Fail)")
+    void testSubtractionFail() {
+        System.out.println("Đang chạy: testSubtractionFail");
+        // Cố tình làm sai để kiểm tra cách hiển thị trên Jira
+        assertEquals(10, 20 - 5, "Kết quả mong đợi là 15 nhưng assertion này sẽ fail");
     }
 
     @Test
-    @DisplayName("Kiểm tra phép chia - Đã sửa để không còn lỗi")
-    void testDivisionSuccess() {
-        System.out.println("Đang chạy: testDivisionSuccess");
-        // Thay vì chia cho 0 gây lỗi, ta chia cho 2
-        int result = 10 / 2;
-        assertEquals(5, result, "10 chia 2 phải bằng 5");
+    @DisplayName("Ví dụ một Test Case gây ra lỗi (Error)")
+    void testRuntimeError() {
+        System.out.println("Đang chạy: testRuntimeError");
+        // Gây ra lỗi chia cho 0 để tạo trạng thái 'Error' thay vì 'Fail'
+        int result = 10 / 0;
     }
 
     @Test
     @DisplayName("Kiểm tra tính đúng đắn của logic - Case thành công")
     void testBooleanLogic() {
         boolean isLearningAgileTest = true;
-        assertTrue(isLearningAgileTest, "Bạn đang học AgileTest rất tốt!");
+        assertTrue(isLearningAgileTest, "Linh đang học AgileTest rất tốt!");
     }
 }
