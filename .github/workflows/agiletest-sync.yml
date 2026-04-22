@@ -33,21 +33,26 @@ jobs:
       - name: Submit to AgileTest
         if: always()
         run: |
-          # 1. Lấy Token xác thực
-          TOKEN=$(curl -s "$BASE_AUTH_URL/api/apikeys/authenticate" \
-            -H 'Content-Type:application/json' \
-            -d "{\"clientId\":\"$CLIENT_ID\",\"clientSecret\":\"$CLIENT_SECRET\"}" | tr -d '"')
+          # 1. Lấy Token và làm sạch giá trị
+          RAW_TOKEN=$(curl -s -X POST "${{ vars.BASE_AUTH_URL }}/api/apikeys/authenticate" \
+            -H 'Content-Type: application/json' \
+            -d "{\"clientId\":\"${{ secrets.CLIENT_ID }}\",\"clientSecret\":\"${{ secrets.CLIENT_SECRET }}\"}")
           
-          if [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then echo "Token rỗng!"; exit 1; fi
+          # Trích xuất token (giả sử kết quả trả về là một chuỗi text thuần túy sau khi trích xuất)
+          TOKEN=$(echo $RAW_TOKEN | tr -d '"' | xargs)
+          
+          if [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then 
+            echo "Lỗi: Không lấy được Token. Phản hồi từ Server: $RAW_TOKEN"
+            exit 1
+          fi
 
-          # 2. Tìm file kết quả Maven (JUnit)
+          # 2. Tìm file kết quả JUnit
           FILE_PATH=$(find target/surefire-reports -name "TEST-*.xml" | head -n 1)
           
-          # 3. Upload kết quả chi tiết
-          # Lưu ý: Thêm tham số testExecutionKey vào URL để ghi nhận đúng bản ghi
-          curl -X POST "$BASE_URL/ds/test-executions/junit?projectKey=$PROJECT_KEY&testExecutionKey=${{ github.event.inputs.TEST_EXECUTION_KEY }}" \
-            -H "Content-Type:application/xml" \
-            -H "Authorization:JWT $TOKEN" \
+          # 3. Gửi kết quả về Jira
+          curl -X POST "${{ vars.BASE_URL }}/ds/test-executions/junit?projectKey=${{ env.PROJECT_KEY }}&testExecutionKey=${{ github.event.inputs.TEST_EXECUTION_KEY }}" \
+            -H "Content-Type: application/xml" \
+            -H "Authorization: JWT $TOKEN" \
             --data-binary "@$FILE_PATH"
 
       - name: Update Pipeline Status
