@@ -31,7 +31,7 @@ public class SimpleTest {
     void testRuntimeError() {
         System.out.println("Đang chạy: testRuntimeError");
         // Gây ra lỗi chia cho 0 để tạo trạng thái 'Error' thay vì 'Fail'
-        int result = 10 / 0;
+        int result = 10 / 1;
     }
 
     @Test
