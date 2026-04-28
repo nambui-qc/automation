@@ -34,7 +34,7 @@ jobs:
         if: always()
         run: |
           # 1. Lấy Token xác thực
-          TOKEN=$(curl -s "$BASE_AUTH_URL/api/apikeys/authenticate" \
+          TOKEN=$(curl -s "$BASE_AUTH_URL/ds/apikeys/authenticate" \
             -H 'Content-Type:application/json' \
             -d "{\"clientId\":\"$CLIENT_ID\",\"clientSecret\":\"$CLIENT_SECRET\"}" | tr -d '"')
           
@@ -60,7 +60,7 @@ jobs:
           fi
           
           # Lấy lại token cho bước này (hoặc dùng biến từ bước trước nếu được lưu)
-          TOKEN=$(curl -s "$BASE_AUTH_URL/api/apikeys/authenticate" \
+          TOKEN=$(curl -s "$BASE_AUTH_URL/ds/apikeys/authenticate" \
             -X POST -H 'Content-Type:application/json' \
             -d "{\"clientId\":\"$CLIENT_ID\",\"clientSecret\":\"$CLIENT_SECRET\"}" | tr -d '"')
 
