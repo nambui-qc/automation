@@ -1,65 +1,65 @@
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.TestFactory;
-
-import java.util.ArrayList;
-import java.util.Collection;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MassiveGeneratedTest {
+public class SimpleTest {
 
-    @TestFactory
-    Collection<DynamicTest> generateMassiveTests() {
+    @Test
+    @DisplayName("Kiểm tra phép cộng cơ bản - Case thành công")
+    void testAdditionSuccess() {
 
-        Collection<DynamicTest> tests = new ArrayList<>();
+        System.out.println("Đang chạy: testAdditionSuccess");
 
-        int totalTests = 7000;
+        assertEquals(
+                5,
+                2 + 3,
+                "2 + 3 phải bằng 5"
+        );
+    }
 
-        for (int i = 1; i <= totalTests; i++) {
+    @Test
+    @DisplayName("Kiểm tra chuỗi rỗng - Case thành công")
+    void testStringNotEmpty() {
 
-            final int testId = i;
+        String data = "AgileTest Practice";
 
-            // PASS CASE
-            if (i % 10 != 0 && i % 15 != 0) {
+        assertFalse(data.isEmpty());
+    }
 
-                tests.add(
-                    DynamicTest.dynamicTest(
-                        "PASS_CASE_" + testId,
-                        () -> {
-                            assertEquals(testId, testId);
-                        }
-                    )
-                );
-            }
+    @Test
+    @DisplayName("Ví dụ một Test Case thất bại (Fail)")
+    void testSubtractionFail() {
 
-            // FAIL CASE
-            else if (i % 10 == 0) {
+        System.out.println("Đang chạy: testSubtractionFail");
 
-                tests.add(
-                    DynamicTest.dynamicTest(
-                        "FAIL_CASE_" + testId,
-                        () -> {
-                            assertEquals(999, testId,
-                                "Intentional fail for testing report");
-                        }
-                    )
-                );
-            }
+        // Cố tình fail để kiểm tra report trên Jira / AgileTest
+        assertEquals(
+                20,
+                20 - 5,
+                "Assertion này sẽ fail"
+        );
+    }
 
-            // ERROR CASE
-            else {
+    @Test
+    @DisplayName("Ví dụ một Test Case gây ra lỗi (Error)")
+    void testRuntimeError() {
 
-                tests.add(
-                    DynamicTest.dynamicTest(
-                        "ERROR_CASE_" + testId,
-                        () -> {
-                            int x = 10 / 0;
-                        }
-                    )
-                );
-            }
-        }
+        System.out.println("Đang chạy: testRuntimeError");
 
-        return tests;
+        // Cố tình tạo runtime error
+        int result = 10 / 0;
+    }
+
+    @Test
+    @DisplayName("Kiểm tra tính đúng đắn của logic - Case thành công")
+    void testBooleanLogic() {
+
+        boolean isLearningAgileTest = true;
+
+        assertTrue(
+                isLearningAgileTest,
+                "Linh đang học AgileTest rất tốt!"
+        );
     }
 }
