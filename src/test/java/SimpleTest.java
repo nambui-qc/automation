@@ -1,43 +1,65 @@
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SimpleTest {
+public class MassiveGeneratedTest {
 
-    @Test
-    @DisplayName("Kiểm tra phép cộng cơ bản - Case thành công")
-    void testAdditionSuccess() {
-        System.out.println("Đang chạy: testAdditionSuccess");
-        assertEquals(5, 2 + 3, "2 + 3 phải bằng 5");
-    }
+    @TestFactory
+    Collection<DynamicTest> generateMassiveTests() {
 
-    @Test
-    @DisplayName("Kiểm tra chuỗi rỗng - Case thành công")
-    void testStringNotEmpty() {
-        String data = "AgileTest Practice";
-        assertFalse(data.isEmpty());
-    }
+        Collection<DynamicTest> tests = new ArrayList<>();
 
-    @Test
-    @DisplayName("Ví dụ một Test Case thất bại (Fail)")
-    void testSubtractionFail() {
-        System.out.println("Đang chạy: testSubtractionFail");
-        // Cố tình làm sai để kiểm tra cách hiển thị trên Jira
-        assertEquals(15, 20 - 5, "Kết quả mong đợi là 15 nhưng assertion này sẽ fail");
-    }
+        int totalTests = 7000;
 
-    @Test
-    @DisplayName("Ví dụ một Test Case gây ra lỗi (Error)")
-    void testRuntimeError() {
-        System.out.println("Đang chạy: testRuntimeError");
-        // Gây ra lỗi chia cho 0 để tạo trạng thái 'Error' thay vì 'Fail'
-        int result = 10 / 0;
-    }
+        for (int i = 1; i <= totalTests; i++) {
 
-    @Test
-    @DisplayName("Kiểm tra tính đúng đắn của logic - Case thành công")
-    void testBooleanLogic() {
-        boolean isLearningAgileTest = true;
-        assertTrue(isLearningAgileTest, "Linh đang học AgileTest rất tốt!");
+            final int testId = i;
+
+            // PASS CASE
+            if (i % 10 != 0 && i % 15 != 0) {
+
+                tests.add(
+                    DynamicTest.dynamicTest(
+                        "PASS_CASE_" + testId,
+                        () -> {
+                            assertEquals(testId, testId);
+                        }
+                    )
+                );
+            }
+
+            // FAIL CASE
+            else if (i % 10 == 0) {
+
+                tests.add(
+                    DynamicTest.dynamicTest(
+                        "FAIL_CASE_" + testId,
+                        () -> {
+                            assertEquals(999, testId,
+                                "Intentional fail for testing report");
+                        }
+                    )
+                );
+            }
+
+            // ERROR CASE
+            else {
+
+                tests.add(
+                    DynamicTest.dynamicTest(
+                        "ERROR_CASE_" + testId,
+                        () -> {
+                            int x = 10 / 0;
+                        }
+                    )
+                );
+            }
+        }
+
+        return tests;
     }
 }
