@@ -129,10 +129,7 @@ jobs:
 
           echo "PIPELINE_URL=$PIPELINE_URL"
 
-          curl --http1.1 -v -X POST "$PIPELINE_URL" \
-            -H "Content-Type: application/json" \
-            -H "Authorization: JWT $TOKEN" \
-            --data @- <<EOF
+          JSON_PAYLOAD=$(cat <<EOF
 {
   "jobURL": "$JOB_URL",
   "repository": "${{ github.repository }}",
@@ -140,3 +137,11 @@ jobs:
   "result": "$RESULT"
 }
 EOF
+)
+
+          echo "$JSON_PAYLOAD"
+
+          curl --http1.1 -v -X POST "$PIPELINE_URL" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: JWT $TOKEN" \
+            -d "$JSON_PAYLOAD"
