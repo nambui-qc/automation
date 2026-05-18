@@ -81,7 +81,7 @@ jobs:
           curl -X POST "$UPLOAD_URL" \
             -H "Content-Type: application/xml" \
             -H "Authorization: JWT $TOKEN" \
-            --data-binary "@$FILE_PATH"
+            --data-binary @"$FILE_PATH"
 
       - name: Update Pipeline Status
         if: always()
