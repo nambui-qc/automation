@@ -47,6 +47,11 @@ jobs:
         if: always()
         run: |
 
+          echo "=== Clean ENV ==="
+
+          BASE_URL=$(echo "$BASE_URL" | tr -d '\r' | xargs)
+          BASE_AUTH_URL=$(echo "$BASE_AUTH_URL" | tr -d '\r' | xargs)
+
           echo "=== Authenticate ==="
 
           TOKEN=$(curl -s -X POST "$BASE_AUTH_URL/ds/apikeys/authenticate" \
@@ -72,20 +77,29 @@ jobs:
             exit 1
           fi
 
+          echo "=== File Info ==="
+
+          ls -lah "$FILE_PATH"
+          file "$FILE_PATH"
+
           echo "=== Upload Result ==="
 
           UPLOAD_URL="${BASE_URL}/ds/test-executions/junit?projectKey=${PROJECT_KEY}&testExecutionKey=${{ github.event.inputs.TEST_EXECUTION_KEY }}"
 
           echo "UPLOAD_URL=$UPLOAD_URL"
 
-          curl -X POST "$UPLOAD_URL" \
+          curl --http1.1 -v -X POST "$UPLOAD_URL" \
             -H "Content-Type: application/xml" \
             -H "Authorization: JWT $TOKEN" \
-            --data-binary @"$FILE_PATH"
+            --data @"$FILE_PATH"
 
       - name: Update Pipeline Status
         if: always()
         run: |
+
+          echo "=== Clean ENV ==="
+
+          BASE_AUTH_URL=$(echo "$BASE_AUTH_URL" | tr -d '\r' | xargs)
 
           echo "=== Determine Pipeline Result ==="
 
@@ -115,12 +129,14 @@ jobs:
 
           echo "PIPELINE_URL=$PIPELINE_URL"
 
-          curl -X POST "$PIPELINE_URL" \
+          curl --http1.1 -v -X POST "$PIPELINE_URL" \
             -H "Content-Type: application/json" \
             -H "Authorization: JWT $TOKEN" \
-            --data "{
-              \"jobURL\": \"$JOB_URL\",
-              \"repository\": \"${{ github.repository }}\",
-              \"tool\": \"github\",
-              \"result\": \"$RESULT\"
-            }"
+            --data @- <<EOF
+{
+  "jobURL": "$JOB_URL",
+  "repository": "${{ github.repository }}",
+  "tool": "github",
+  "result": "$RESULT"
+}
+EOF
