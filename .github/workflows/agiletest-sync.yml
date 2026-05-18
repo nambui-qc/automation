@@ -96,9 +96,9 @@ jobs:
 
           RESPONSE=$(curl --http1.1 -s -w "\nHTTP_STATUS:%{http_code}" \
             -X POST "$UPLOAD_URL" \
-            -H "Content-Type: text/xml" \
+            -H "Content-Type: application/xml" \
             -H "Authorization: JWT $TOKEN" \
-            --data @"$FILE_PATH")
+            --data-binary @"$FILE_PATH")
 
           echo "=== AgileTest Response ==="
           echo "$RESPONSE"
@@ -145,10 +145,10 @@ jobs:
           echo "$JSON_PAYLOAD"
 
           RESPONSE=$(curl --http1.1 -s -w "\nHTTP_STATUS:%{http_code}" \
-          -X POST "$PIPELINE_URL" \
-          -H "Content-Type: application/json" \
-          -H "Authorization: JWT $TOKEN" \
-          -d "$JSON_PAYLOAD")
+            -X POST "$PIPELINE_URL" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: JWT $TOKEN" \
+            -d "$JSON_PAYLOAD")
 
           echo "=== Pipeline API Response ==="
           echo "$RESPONSE"
