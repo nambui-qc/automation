@@ -34,7 +34,9 @@ jobs:
           cache: maven
 
       - name: Execute Tests
-        run: mvn test
+        continue-on-error: true
+        run: |
+          mvn test
 
       - name: Debug ENV
         run: |
@@ -46,6 +48,11 @@ jobs:
       - name: Submit to AgileTest
         if: always()
         run: |
+
+          echo "=== Clean ENV ==="
+
+          BASE_URL=$(echo "$BASE_URL" | tr -d '\r' | xargs)
+          BASE_AUTH_URL=$(echo "$BASE_AUTH_URL" | tr -d '\r' | xargs)
 
           echo "=== Authenticate ==="
 
@@ -72,20 +79,37 @@ jobs:
             exit 1
           fi
 
+          echo "=== File Info ==="
+
+          ls -lah "$FILE_PATH"
+          file "$FILE_PATH"
+
+          echo "=== XML Preview ==="
+
+          cat "$FILE_PATH"
+
           echo "=== Upload Result ==="
 
           UPLOAD_URL="${BASE_URL}/ds/test-executions/junit?projectKey=${PROJECT_KEY}&testExecutionKey=${{ github.event.inputs.TEST_EXECUTION_KEY }}"
 
           echo "UPLOAD_URL=$UPLOAD_URL"
 
-          curl --http1.1 -X POST "$UPLOAD_URL" \
-            -H "Content-Type: application/xml" \
+          RESPONSE=$(curl --http1.1 -s -w "\nHTTP_STATUS:%{http_code}" \
+            -X POST "$UPLOAD_URL" \
+            -H "Content-Type: text/xml" \
             -H "Authorization: JWT $TOKEN" \
-            --data @"$FILE_PATH"
+            --data @"$FILE_PATH")
+
+          echo "=== AgileTest Response ==="
+          echo "$RESPONSE"
 
       - name: Update Pipeline Status
         if: always()
         run: |
+
+          echo "=== Clean ENV ==="
+
+          BASE_AUTH_URL=$(echo "$BASE_AUTH_URL" | tr -d '\r' | xargs)
 
           echo "=== Determine Pipeline Result ==="
 
@@ -115,12 +139,24 @@ jobs:
 
           echo "PIPELINE_URL=$PIPELINE_URL"
 
-          curl --http1.1 -X POST "$PIPELINE_URL" \
+          JSON_PAYLOAD=$(cat <<EOF
+{
+  "jobURL": "$JOB_URL",
+  "repository": "${{ github.repository }}",
+  "tool": "github",
+  "result": "$RESULT"
+}
+EOF
+)
+
+          echo "=== JSON PAYLOAD ==="
+          echo "$JSON_PAYLOAD"
+
+          RESPONSE=$(curl --http1.1 -s -w "\nHTTP_STATUS:%{http_code}" \
+            -X POST "$PIPELINE_URL" \
             -H "Content-Type: application/json" \
             -H "Authorization: JWT $TOKEN" \
-            --data "{
-              \"jobURL\": \"$JOB_URL\",
-              \"repository\": \"${{ github.repository }}\",
-              \"tool\": \"github\",
-              \"result\": \"$RESULT\"
-            }"
+            -d "$JSON_PAYLOAD")
+
+          echo "=== Pipeline API Response ==="
+          echo "$RESPONSE"
