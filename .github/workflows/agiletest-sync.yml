@@ -1,74 +1,121 @@
 name: AgileTest Sync
+
 on:
   workflow_dispatch:
     inputs:
       TEST_EXECUTION_KEY:
         description: "Test Execution Key from Jira"
+        required: true
+
       PROJECT_KEY:
         description: "Project Key truyền từ Jira"
+        required: true
 
 env:
   BASE_URL: ${{ vars.BASE_URL }}
   BASE_AUTH_URL: ${{ vars.BASE_AUTH_URL }}
   CLIENT_ID: ${{ secrets.CLIENT_ID }}
   CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-  # Ưu tiên lấy Project Key từ Jira truyền sang (nếu có)
-  PROJECT_KEY: ${{ github.event.inputs.PROJECT_KEY || vars.PROJECT_KEY }}
+  PROJECT_KEY: ${{ github.event.inputs.PROJECT_KEY }}
 
 jobs:
   run-test:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: "17"
+          distribution: "temurin"
           cache: maven
 
       - name: Execute Tests
         run: mvn test
 
+      - name: Debug ENV
+        run: |
+          echo "BASE_URL=[$BASE_URL]"
+          echo "BASE_AUTH_URL=[$BASE_AUTH_URL]"
+          echo "PROJECT_KEY=[$PROJECT_KEY]"
+          echo "TEST_EXECUTION_KEY=[${{ github.event.inputs.TEST_EXECUTION_KEY }}]"
+
       - name: Submit to AgileTest
         if: always()
         run: |
-          # 1. Lấy Token xác thực
-          TOKEN=$(curl -s "$BASE_AUTH_URL/ds/apikeys/authenticate" \
-            -H 'Content-Type:application/json' \
-            -d "{\"clientId\":\"$CLIENT_ID\",\"clientSecret\":\"$CLIENT_SECRET\"}" | tr -d '"')
-          
-          if [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then echo "Token rỗng!"; exit 1; fi
 
-          # 2. Tìm file kết quả Maven (JUnit)
+          echo "=== Authenticate ==="
+
+          TOKEN=$(curl -s -X POST "$BASE_AUTH_URL/ds/apikeys/authenticate" \
+            -H "Content-Type: application/json" \
+            -d "{\"clientId\":\"$CLIENT_ID\",\"clientSecret\":\"$CLIENT_SECRET\"}" \
+            | tr -d '"')
+
+          echo "TOKEN received"
+
+          if [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then
+            echo "Token rỗng hoặc không hợp lệ!"
+            exit 1
+          fi
+
+          echo "=== Find JUnit XML ==="
+
           FILE_PATH=$(find target/surefire-reports -name "TEST-*.xml" | head -n 1)
-          
-          # 3. Upload kết quả chi tiết
-          # Lưu ý: Thêm tham số testExecutionKey vào URL để ghi nhận đúng bản ghi
-          curl -X POST "$BASE_URL/ds/test-executions/junit?projectKey=$PROJECT_KEY&testExecutionKey=${{ github.event.inputs.TEST_EXECUTION_KEY }}" \
-            -H "Content-Type:application/xml" \
-            -H "Authorization:JWT $TOKEN" \
+
+          echo "FILE_PATH=$FILE_PATH"
+
+          if [ -z "$FILE_PATH" ]; then
+            echo "Không tìm thấy file JUnit XML"
+            exit 1
+          fi
+
+          echo "=== Upload Result ==="
+
+          UPLOAD_URL="${BASE_URL}/ds/test-executions/junit?projectKey=${PROJECT_KEY}&testExecutionKey=${{ github.event.inputs.TEST_EXECUTION_KEY }}"
+
+          echo "UPLOAD_URL=$UPLOAD_URL"
+
+          curl -X POST "$UPLOAD_URL" \
+            -H "Content-Type: application/xml" \
+            -H "Authorization: JWT $TOKEN" \
             --data-binary "@$FILE_PATH"
 
       - name: Update Pipeline Status
         if: always()
         run: |
+
+          echo "=== Determine Pipeline Result ==="
+
           if [ "${{ job.status }}" == "success" ]; then
             RESULT="success"
           else
             RESULT="failed"
           fi
-          
-          # Lấy lại token cho bước này (hoặc dùng biến từ bước trước nếu được lưu)
-          TOKEN=$(curl -s "$BASE_AUTH_URL/ds/apikeys/authenticate" \
-            -X POST -H 'Content-Type:application/json' \
-            -d "{\"clientId\":\"$CLIENT_ID\",\"clientSecret\":\"$CLIENT_SECRET\"}" | tr -d '"')
 
-          # Cập nhật lịch sử chạy Pipeline theo mẫu GitLab
-          # Sử dụng link runId để AgileTest hiển thị nút "View Log"
+          echo "Pipeline Result: $RESULT"
+
+          echo "=== Authenticate Again ==="
+
+          TOKEN=$(curl -s -X POST "$BASE_AUTH_URL/ds/apikeys/authenticate" \
+            -H "Content-Type: application/json" \
+            -d "{\"clientId\":\"$CLIENT_ID\",\"clientSecret\":\"$CLIENT_SECRET\"}" \
+            | tr -d '"')
+
+          if [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then
+            echo "Token rỗng hoặc không hợp lệ!"
+            exit 1
+          fi
+
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
-          curl -X POST "$BASE_AUTH_URL/ds/test-executions/${{ github.event.inputs.TEST_EXECUTION_KEY }}/pipeline/history?projectKey=$PROJECT_KEY" \
+          PIPELINE_URL="${BASE_AUTH_URL}/ds/test-executions/${{ github.event.inputs.TEST_EXECUTION_KEY }}/pipeline/history?projectKey=${PROJECT_KEY}"
+
+          echo "PIPELINE_URL=$PIPELINE_URL"
+
+          curl -X POST "$PIPELINE_URL" \
             -H "Content-Type: application/json" \
             -H "Authorization: JWT $TOKEN" \
             --data "{
