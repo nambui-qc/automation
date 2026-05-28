@@ -38,19 +38,21 @@ jobs:
           TOKEN=$(curl -s -X POST "$BASE_AUTH_URL/api/apikeys/authenticate" \
             -H 'Content-Type:application/json' \
             -d "{\"clientId\":\"$CLIENT_ID\",\"clientSecret\":\"$CLIENT_SECRET\"}" \
-            | jq -r '.token')
+            | tr -d '"')
+
+          echo "TOKEN length: ${#TOKEN}"
 
           if [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then
-            echo "❌ Token rỗng!"; exit 1
+            echo "Token rong!"; exit 1
           fi
 
           for FILE in $(find target/surefire-reports -name "TEST-*.xml"); do
-            echo "📤 Uploading: $FILE"
+            echo "Uploading: $FILE"
             RESPONSE=$(curl -s -X POST "$BASE_URL/ds/test-executions/junit?projectKey=$PROJECT_KEY&testExecutionKey=$TEST_EXECUTION_KEY" \
               -H "Content-Type:application/xml" \
               -H "Authorization:JWT $TOKEN" \
               --data-binary "@$FILE")
-            echo "📥 Response: $RESPONSE"
+            echo "Response: $RESPONSE"
           done
 
       - name: Update Pipeline Status
@@ -67,20 +69,15 @@ jobs:
           TOKEN=$(curl -s -X POST "$BASE_AUTH_URL/api/apikeys/authenticate" \
             -H 'Content-Type:application/json' \
             -d "{\"clientId\":\"$CLIENT_ID\",\"clientSecret\":\"$CLIENT_SECRET\"}" \
-            | jq -r '.token')
+            | tr -d '"')
 
           if [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then
-            echo "❌ Token rỗng!"; exit 1
+            echo "Token rong!"; exit 1
           fi
 
-          JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          JOB_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
           curl -s -X POST "$BASE_URL/ds/test-executions/$TEST_EXECUTION_KEY/pipeline/history?projectKey=$PROJECT_KEY" \
             -H "Content-Type: application/json" \
             -H "Authorization: JWT $TOKEN" \
-            --data "{
-              \"jobURL\": \"$JOB_URL\",
-              \"repository\": \"${{ github.repository }}\",
-              \"tool\": \"github\",
-              \"result\": \"$RESULT\"
-            }"
+            --data "{\"jobURL\":\"$JOB_URL\",\"repository\":\"$GITHUB_REPOSITORY\",\"tool\":\"github\",\"result\":\"$RESULT\"}"
