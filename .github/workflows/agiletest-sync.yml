@@ -13,6 +13,7 @@ env:
   CLIENT_ID: ${{ secrets.CLIENT_ID }}
   CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
   PROJECT_KEY: ${{ github.event.inputs.PROJECT_KEY || vars.PROJECT_KEY }}
+  TEST_EXECUTION_KEY: ${{ github.event.inputs.TEST_EXECUTION_KEY }}
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
@@ -36,25 +37,26 @@ jobs:
         run: |
           TOKEN=$(curl -s -X POST "$BASE_AUTH_URL/api/apikeys/authenticate" \
             -H 'Content-Type:application/json' \
-            -d "{\"clientId\":\"$CLIENT_ID\",\"clientSecret\":\"$CLIENT_SECRET\"}" | tr -d '"')
+            -d "{\"clientId\":\"$CLIENT_ID\",\"clientSecret\":\"$CLIENT_SECRET\"}" \
+            | jq -r '.token')
 
           if [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then
             echo "❌ Token rỗng!"; exit 1
           fi
 
-          # ✅ Upload tất cả file XML
           for FILE in $(find target/surefire-reports -name "TEST-*.xml"); do
             echo "📤 Uploading: $FILE"
-            curl -X POST "$BASE_URL/ds/test-executions/junit?projectKey=$PROJECT_KEY&testExecutionKey=${{ github.event.inputs.TEST_EXECUTION_KEY }}" \
+            RESPONSE=$(curl -s -X POST "$BASE_URL/ds/test-executions/junit?projectKey=$PROJECT_KEY&testExecutionKey=$TEST_EXECUTION_KEY" \
               -H "Content-Type:application/xml" \
               -H "Authorization:JWT $TOKEN" \
-              --data-binary "@$FILE"
+              --data-binary "@$FILE")
+            echo "📥 Response: $RESPONSE"
           done
 
       - name: Update Pipeline Status
         if: always()
         env:
-          JOB_RESULT: ${{ job.status }}  # ✅ fix context
+          JOB_RESULT: ${{ job.status }}
         run: |
           if [ "$JOB_RESULT" == "success" ]; then
             RESULT="success"
@@ -64,12 +66,16 @@ jobs:
 
           TOKEN=$(curl -s -X POST "$BASE_AUTH_URL/api/apikeys/authenticate" \
             -H 'Content-Type:application/json' \
-            -d "{\"clientId\":\"$CLIENT_ID\",\"clientSecret\":\"$CLIENT_SECRET\"}" | tr -d '"')
+            -d "{\"clientId\":\"$CLIENT_ID\",\"clientSecret\":\"$CLIENT_SECRET\"}" \
+            | jq -r '.token')
+
+          if [ -z "$TOKEN" ] || [ "$TOKEN" == "null" ]; then
+            echo "❌ Token rỗng!"; exit 1
+          fi
 
           JOB_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
-          # ✅ Dùng BASE_URL thay vì BASE_AUTH_URL
-          curl -X POST "$BASE_URL/ds/test-executions/${{ github.event.inputs.TEST_EXECUTION_KEY }}/pipeline/history?projectKey=$PROJECT_KEY" \
+          curl -s -X POST "$BASE_URL/ds/test-executions/$TEST_EXECUTION_KEY/pipeline/history?projectKey=$PROJECT_KEY" \
             -H "Content-Type: application/json" \
             -H "Authorization: JWT $TOKEN" \
             --data "{
