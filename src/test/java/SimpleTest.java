@@ -9,7 +9,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SimpleTest {
+public class SimpleTest2 {
 
     // =========================================================
     // ====================== PASSED ===========================
@@ -17,84 +17,84 @@ public class SimpleTest {
     // =========================================================
 
     @Test
-    @DisplayName("PASS - Verify basic addition")
+    @DisplayName("PASS - Verify addition")
     void testAddition() {
-        int result = 2 + 3;
-        assertEquals(5, result, "2 + 3 should equal 5");
+        int result = 7 + 8;
+        assertEquals(15, result, "7 + 8 should equal 15");
     }
 
     @Test
     @DisplayName("PASS - Verify subtraction")
     void testSubtraction() {
-        int result = 20 - 5;
-        assertEquals(15, result, "20 - 5 should equal 15");
+        int result = 50 - 15;
+        assertEquals(35, result, "50 - 15 should equal 35");
     }
 
     @Test
     @DisplayName("PASS - Verify multiplication")
     void testMultiplication() {
-        int result = 4 * 5;
-        assertEquals(20, result, "4 * 5 should equal 20");
+        int result = 6 * 7;
+        assertEquals(42, result, "6 * 7 should equal 42");
     }
 
     @Test
     @DisplayName("PASS - Verify integer division")
     void testDivision() {
-        int result = 20 / 4;
-        assertEquals(5, result, "20 / 4 should equal 5");
+        int result = 36 / 6;
+        assertEquals(6, result, "36 / 6 should equal 6");
     }
 
     @Test
     @DisplayName("PASS - Verify positive number")
     void testPositiveNumber() {
-        int number = 100;
+        int number = 250;
         assertTrue(number > 0, "The number should be positive");
     }
 
     @Test
     @DisplayName("PASS - Verify negative number")
     void testNegativeNumber() {
-        int number = -10;
+        int number = -42;
         assertTrue(number < 0, "The number should be negative");
     }
 
     @Test
     @DisplayName("PASS - Verify string is not empty")
     void testStringNotEmpty() {
-        String text = "AgileTest";
+        String text = "QualityCheck";
         assertFalse(text.isEmpty(), "The string should not be empty");
     }
 
     @Test
     @DisplayName("PASS - Verify string equality")
     void testStringEqualitySuccess() {
-        String actual = "AgileTest";
-        assertEquals("AgileTest", actual, "The strings should be equal");
+        String actual = "QualityCheck";
+        assertEquals("QualityCheck", actual, "The strings should be equal");
     }
 
     @Test
     @DisplayName("PASS - Verify string contains text")
     void testStringContains() {
-        String text = "AgileTest Practice";
-        assertTrue(text.contains("Test"),
-                "The string should contain 'Test'");
+        String text = "QualityCheck Suite";
+        assertTrue(text.contains("Check"),
+                "The string should contain 'Check'");
     }
 
     @Test
     @DisplayName("PASS - Verify string starts with expected text")
     void testStringStartsWith() {
-        String text = "AgileTest";
-        assertTrue(text.startsWith("Agile"),
-                "The string should start with 'Agile'");
+        String text = "QualityCheck";
+        assertTrue(text.startsWith("Quality"),
+                "The string should start with 'Quality'");
     }
 
     @Test
     @DisplayName("PASS - Verify list size")
     void testListSizeSuccess() {
         List<String> items = Arrays.asList(
-                "Java",
-                "JUnit",
-                "Selenium"
+                "Python",
+                "TestNG",
+                "Cypress"
         );
 
         assertEquals(3, items.size(),
@@ -105,63 +105,63 @@ public class SimpleTest {
     @DisplayName("PASS - Verify list contains an element")
     void testListContainsSuccess() {
         List<String> items = Arrays.asList(
-                "Java",
-                "JUnit",
-                "Selenium"
+                "Python",
+                "TestNG",
+                "Cypress"
         );
 
-        assertTrue(items.contains("JUnit"),
-                "The list should contain JUnit");
+        assertTrue(items.contains("TestNG"),
+                "The list should contain TestNG");
     }
 
     @Test
     @DisplayName("PASS - Verify first list element")
     void testFirstListElement() {
         List<String> items = Arrays.asList(
-                "Java",
-                "JUnit",
-                "Selenium"
+                "Python",
+                "TestNG",
+                "Cypress"
         );
 
-        assertEquals("Java", items.get(0),
-                "The first element should be Java");
+        assertEquals("Python", items.get(0),
+                "The first element should be Python");
     }
 
     @Test
     @DisplayName("PASS - Verify last list element")
     void testLastListElement() {
         List<String> items = Arrays.asList(
-                "Java",
-                "JUnit",
-                "Selenium"
+                "Python",
+                "TestNG",
+                "Cypress"
         );
 
-        assertEquals("Selenium", items.get(2),
-                "The last element should be Selenium");
+        assertEquals("Cypress", items.get(2),
+                "The last element should be Cypress");
     }
 
     @Test
     @DisplayName("PASS - Verify Boolean true condition")
     void testBooleanTrue() {
-        boolean isLearning = true;
+        boolean isActive = true;
 
-        assertTrue(isLearning,
-                "The learning status should be true");
+        assertTrue(isActive,
+                "The active status should be true");
     }
 
     @Test
     @DisplayName("PASS - Verify Boolean false condition")
     void testBooleanFalse() {
-        boolean isCompleted = false;
+        boolean isDisabled = false;
 
-        assertFalse(isCompleted,
-                "The completed status should be false");
+        assertFalse(isDisabled,
+                "The disabled status should be false");
     }
 
     @Test
     @DisplayName("PASS - Verify object is not null")
     void testNotNull() {
-        String value = "AgileTest";
+        String value = "QualityCheck";
 
         assertNotNull(value,
                 "The value should not be null");
@@ -179,19 +179,19 @@ public class SimpleTest {
     @Test
     @DisplayName("PASS - Verify array length")
     void testArrayLength() {
-        int[] numbers = {10, 20, 30, 40};
+        int[] numbers = {5, 15, 25, 35, 45};
 
-        assertEquals(4, numbers.length,
-                "The array should contain 4 elements");
+        assertEquals(5, numbers.length,
+                "The array should contain 5 elements");
     }
 
     @Test
     @DisplayName("PASS - Verify array element")
     void testArrayElement() {
-        int[] numbers = {10, 20, 30};
+        int[] numbers = {5, 15, 25};
 
-        assertEquals(20, numbers[1],
-                "The second element should be 20");
+        assertEquals(15, numbers[1],
+                "The second element should be 15");
     }
 
 
@@ -203,43 +203,43 @@ public class SimpleTest {
     @Test
     @DisplayName("FAILED - Addition with incorrect expected value")
     void testAdditionWrongExpected() {
-        int result = 2 + 3;
+        int result = 7 + 8;
 
-        assertEquals(6, result,
-                "2 + 3 should equal 6");
+        assertEquals(20, result,
+                "7 + 8 should equal 20");
     }
 
     @Test
     @DisplayName("FAILED - Subtraction with incorrect expected value")
     void testSubtractionWrongExpected() {
-        int result = 20 - 5;
+        int result = 50 - 15;
 
-        assertEquals(20, result,
-                "20 - 5 should equal 20");
+        assertEquals(50, result,
+                "50 - 15 should equal 50");
     }
 
     @Test
     @DisplayName("FAILED - Multiplication with incorrect expected value")
     void testMultiplicationWrongExpected() {
-        int result = 4 * 5;
+        int result = 6 * 7;
 
-        assertEquals(25, result,
-                "4 * 5 should equal 25");
+        assertEquals(50, result,
+                "6 * 7 should equal 50");
     }
 
     @Test
     @DisplayName("FAILED - Division with incorrect expected value")
     void testDivisionWrongExpected() {
-        int result = 20 / 4;
+        int result = 36 / 6;
 
         assertEquals(10, result,
-                "20 / 4 should equal 10");
+                "36 / 6 should equal 10");
     }
 
     @Test
     @DisplayName("FAILED - Positive number condition is incorrect")
     void testPositiveNumberFailed() {
-        int number = -5;
+        int number = -8;
 
         assertTrue(number > 0,
                 "The number should be positive");
@@ -248,7 +248,7 @@ public class SimpleTest {
     @Test
     @DisplayName("FAILED - Negative number condition is incorrect")
     void testNegativeNumberFailed() {
-        int number = 10;
+        int number = 30;
 
         assertTrue(number < 0,
                 "The number should be negative");
@@ -257,46 +257,46 @@ public class SimpleTest {
     @Test
     @DisplayName("FAILED - String equality mismatch")
     void testStringEqualityFailed() {
-        String actual = "AgileTest";
+        String actual = "QualityCheck";
 
-        assertEquals("Hello",
+        assertEquals("World",
                 actual,
-                "The string should be Hello");
+                "The string should be World");
     }
 
     @Test
     @DisplayName("FAILED - String should contain expected text")
     void testStringContainsFailed() {
-        String text = "AgileTest";
+        String text = "QualityCheck";
 
-        assertTrue(text.contains("Selenium"),
-                "The string should contain Selenium");
+        assertTrue(text.contains("Cypress"),
+                "The string should contain Cypress");
     }
 
     @Test
     @DisplayName("FAILED - String should start with expected text")
     void testStringStartsWithFailed() {
-        String text = "AgileTest";
+        String text = "QualityCheck";
 
-        assertTrue(text.startsWith("JUnit"),
-                "The string should start with JUnit");
+        assertTrue(text.startsWith("TestNG"),
+                "The string should start with TestNG");
     }
 
     @Test
     @DisplayName("FAILED - String should end with expected text")
     void testStringEndsWithFailed() {
-        String text = "AgileTest";
+        String text = "QualityCheck";
 
-        assertTrue(text.endsWith("Java"),
-                "The string should end with Java");
+        assertTrue(text.endsWith("Python"),
+                "The string should end with Python");
     }
 
     @Test
     @DisplayName("FAILED - Incorrect list size")
     void testListSizeFailed() {
         List<String> items = Arrays.asList(
-                "Java",
-                "JUnit"
+                "Python",
+                "TestNG"
         );
 
         assertEquals(3, items.size(),
@@ -307,57 +307,57 @@ public class SimpleTest {
     @DisplayName("FAILED - List should contain missing element")
     void testListContainsFailed() {
         List<String> items = Arrays.asList(
-                "Java",
-                "JUnit",
-                "Selenium"
+                "Python",
+                "TestNG",
+                "Cypress"
         );
 
-        assertTrue(items.contains("Python"),
-                "The list should contain Python");
+        assertTrue(items.contains("Ruby"),
+                "The list should contain Ruby");
     }
 
     @Test
     @DisplayName("FAILED - Incorrect first list element")
     void testFirstListElementFailed() {
         List<String> items = Arrays.asList(
-                "Java",
-                "JUnit",
-                "Selenium"
+                "Python",
+                "TestNG",
+                "Cypress"
         );
 
-        assertEquals("Python", items.get(0),
-                "The first element should be Python");
+        assertEquals("Ruby", items.get(0),
+                "The first element should be Ruby");
     }
 
     @Test
     @DisplayName("FAILED - Incorrect last list element")
     void testLastListElementFailed() {
         List<String> items = Arrays.asList(
-                "Java",
-                "JUnit",
-                "Selenium"
+                "Python",
+                "TestNG",
+                "Cypress"
         );
 
-        assertEquals("Python", items.get(2),
-                "The last element should be Python");
+        assertEquals("Ruby", items.get(2),
+                "The last element should be Ruby");
     }
 
     @Test
     @DisplayName("FAILED - Boolean true condition")
     void testBooleanTrueFailed() {
-        boolean isLearning = false;
+        boolean isActive = false;
 
-        assertTrue(isLearning,
-                "The learning status should be true");
+        assertTrue(isActive,
+                "The active status should be true");
     }
 
     @Test
     @DisplayName("FAILED - Boolean false condition")
     void testBooleanFalseFailed() {
-        boolean isCompleted = true;
+        boolean isDisabled = true;
 
-        assertFalse(isCompleted,
-                "The completed status should be false");
+        assertFalse(isDisabled,
+                "The disabled status should be false");
     }
 
     @Test
@@ -372,7 +372,7 @@ public class SimpleTest {
     @Test
     @DisplayName("FAILED - Object should be null")
     void testIsNullFailed() {
-        String value = "AgileTest";
+        String value = "QualityCheck";
 
         assertNull(value,
                 "The value should be null");
@@ -381,19 +381,19 @@ public class SimpleTest {
     @Test
     @DisplayName("FAILED - Incorrect array length")
     void testArrayLengthFailed() {
-        int[] numbers = {10, 20, 30, 40};
+        int[] numbers = {5, 15, 25, 35, 45};
 
-        assertEquals(5, numbers.length,
-                "The array should contain 5 elements");
+        assertEquals(10, numbers.length,
+                "The array should contain 10 elements");
     }
 
     @Test
     @DisplayName("FAILED - Incorrect array element")
     void testArrayElementFailed() {
-        int[] numbers = {10, 20, 30};
+        int[] numbers = {5, 15, 25};
 
-        assertEquals(50, numbers[1],
-                "The second element should be 50");
+        assertEquals(99, numbers[1],
+                "The second element should be 99");
     }
 
 
@@ -410,7 +410,7 @@ public class SimpleTest {
     @Test
     @DisplayName("ERROR - Division by zero")
     void testDivisionByZero() {
-        int result = 10 / 0;
+        int result = 25 / 0;
 
         assertEquals(5, result);
     }
@@ -422,60 +422,60 @@ public class SimpleTest {
 
         int length = text.length();
 
-        assertEquals(5, length);
+        assertEquals(10, length);
     }
 
     @Test
     @DisplayName("ERROR - Array index out of bounds")
     void testArrayOutOfBounds() {
-        int[] numbers = {10, 20, 30};
+        int[] numbers = {5, 15, 25};
 
-        int value = numbers[5];
+        int value = numbers[8];
 
-        assertEquals(20, value);
+        assertEquals(15, value);
     }
 
     @Test
     @DisplayName("ERROR - Invalid number format")
     void testInvalidNumberFormat() {
-        String value = "AgileTest";
+        String value = "QualityCheck";
 
         int number = Integer.parseInt(value);
 
-        assertEquals(100, number);
+        assertEquals(200, number);
     }
 
     @Test
     @DisplayName("ERROR - List index out of bounds")
     void testListIndexOutOfBounds() {
         List<String> items = Arrays.asList(
-                "Java",
-                "JUnit"
+                "Python",
+                "TestNG"
         );
 
-        String item = items.get(5);
+        String item = items.get(9);
 
-        assertEquals("Selenium", item);
+        assertEquals("Cypress", item);
     }
 
     @Test
     @DisplayName("ERROR - Negative array size")
     void testNegativeArraySize() {
-        int size = -5;
+        int size = -12;
 
         int[] numbers = new int[size];
 
-        assertEquals(5, numbers.length);
+        assertEquals(12, numbers.length);
     }
 
     @Test
     @DisplayName("ERROR - String index out of bounds")
     void testStringIndexOutOfBounds() {
-        String text = "JUnit";
+        String text = "TestNG";
 
-        char character = text.charAt(10);
+        char character = text.charAt(20);
 
-        assertEquals('A', character);
+        assertEquals('T', character);
     }
 
     @Test
@@ -492,20 +492,20 @@ public class SimpleTest {
     @DisplayName("ERROR - Invalid array access")
     void testInvalidArrayAccess() {
         String[] tools = {
-                "JUnit",
-                "Selenium",
+                "TestNG",
+                "Cypress",
                 "Postman"
         };
 
-        String tool = tools[10];
+        String tool = tools[15];
 
-        assertEquals("Java", tool);
+        assertEquals("Python", tool);
     }
 
     @Test
     @DisplayName("ERROR - Arithmetic operation with invalid value")
     void testInvalidArithmeticOperation() {
-        int number = Integer.MAX_VALUE;
+        int number = Integer.MIN_VALUE;
 
         // This expression intentionally causes an exception
         int result = number / 0;
