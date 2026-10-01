@@ -9,7 +9,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SimpleTest1 {
+public class SimpleTest {
 
     // =========================================================
     // ====================== PASSED ===========================
